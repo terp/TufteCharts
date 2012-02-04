@@ -1,0 +1,45 @@
+body {
+	background-color: beige;
+	font-family:"Garamond", serif;
+}
+canvas {
+	background-color: white;
+}
+div {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 3px;
+	text-align: center;
+}
+table {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+.label {
+	font-style: italic;
+	margin-right: 2px;
+	text-align: right;
+}
+.title {
+	display: block;
+	font-style: italic;
+	font-size: larger;
+	margin-top: 4px;
+	margin-bottom: 2px;
+}
+.note {
+	font-size: smaller;
+	font-style: italic;
+}
+.subnote {
+	font-size: smaller;
+	font-style: italic;
+	display: block;
+}
+.red {
+	color: #D74939;
+}
+.blue {
+	color: #267F8D;
+}

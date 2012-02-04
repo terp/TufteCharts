@@ -3,16 +3,35 @@
 <head>
 	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 	<script type="text/javascript" src="tufte-charts.js"></script>
+	<script type="text/javascript" src="test.js"></script>
+	<link rel="stylesheet" type="text/css" href="tufte.css" />
 </head>
 <body>
-	<div id="resize">
-		<canvas id="test_canvas" style="color:red" width="500" height="50"/>
+	<table>
+		<tr>
+			<td class="label">Northbound:</td>
+			<td><canvas class="red" id="north" width="200" height="25"></canvas></td>
+			<td><span class="note" id="north-max"></span></td>
+		</tr>
+		<tr>
+			<td class="label">Southbound:</td>
+			<td><canvas class="blue" id="south" width="200" height="25"></canvas></td>
+			<td><span class="note" id="south-max"></span></td>
+		</tr>
+		<tr>
+			<td class="label">Overall:</td>
+			<td><canvas class="red" id="all" width="200" height="25"></canvas></td>
+			<td><span class="note" id="all-max"></span></td>
+		</tr>
+	</table>
+	<div>
+		<span class="title">Southbound Bar Chart</span>
+		<canvas class="blue" id="bar_chart" width="500" height="250"></canvas>
+		<span class="subnote" id="south-note"></span>
 	</div>
-	<div id="resize2">
-		<canvas id="bar_chart" style="color:#267F8D; background-color: white" width="500" height="300" />
-	</div>
-	<div id="resize3">
-		<canvas id="scatter" style="color:brown" width="500" height="300"/>
+	<div>
+		<span class="title">Random Scatter Plot</span>
+		<canvas class="red" id="scatter" width="500" height="300"></canvas>
 	</div>
 </body>
 </html>
