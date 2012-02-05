@@ -1,3 +1,5 @@
+# This is free and unencumbered software released into the public domain.
+
 getContext = (id) ->
 	return document.getElementById(id).getContext('2d')
 
@@ -57,13 +59,13 @@ barChart = (id, values) ->
 	for v in values
 		max = Math.max v, max
 	elem = $('#' + id)
-	view = new viewport 0, 0, 2 * n - 1, max, 0, 0, elem.width(), elem.height()-1
+	view = new viewport 0, 0, 2 * n + 1, max, 0, 0, elem.width(), elem.height()-1
 	context = getContext id
 	context.fillStyle = elem.css('color')
 	context.strokeStyle = elem.css('color')
 	context.lineWidth = 1
 	p0 = view.toView { x: 0, y: 0 }
-	pn = view.toView { x: 2*n-1, y: 0 }
+	pn = view.toView { x: 2*n+1, y: 0 }
 	context.drawLine p0.x, p0.y, pn.x, pn.y
 	context.strokeStyle = elem.css('background-color')
 	p25 = view.toView { x: 0, y: 0.25*max }

@@ -72,7 +72,7 @@ barChart = function(id, values) {
     max = Math.max(v, max);
   }
   elem = $('#' + id);
-  view = new viewport(0, 0, 2 * n - 1, max, 0, 0, elem.width(), elem.height() - 1);
+  view = new viewport(0, 0, 2 * n + 1, max, 0, 0, elem.width(), elem.height() - 1);
   context = getContext(id);
   context.fillStyle = elem.css('color');
   context.strokeStyle = elem.css('color');
@@ -82,7 +82,7 @@ barChart = function(id, values) {
     y: 0
   });
   pn = view.toView({
-    x: 2 * n - 1,
+    x: 2 * n + 1,
     y: 0
   });
   context.drawLine(p0.x, p0.y, pn.x, pn.y);
