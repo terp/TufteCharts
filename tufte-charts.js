@@ -122,6 +122,10 @@ extents = function(min, max) {
   dx = Math.abs(max - min);
   ddx = dx / 10;
   divisor = 1;
+  while (ddx > 10) {
+    ddx /= 10;
+    divisor /= 10;
+  }
   while (ddx < 1) {
     ddx *= 10;
     divisor *= 10;
@@ -181,7 +185,7 @@ scatterPlot = function(id, points) {
   elem = $('#' + id);
   extent = nearestExtents(min, max);
   h = elem.height() - 1;
-  view = new viewport(extent.x.min, extent.y.min, extent.x.max - extent.x.min, extent.y.max - extent.y.min, 2, 2, elem.width() - 5, elem.height() - 5);
+  view = new viewport(extent.x.min, extent.y.min, extent.x.max - extent.x.min, extent.y.max - extent.y.min, 4, 2, elem.width() - 7, elem.height() - 7);
   context = getContext(id);
   context.fillStyle = elem.css('color');
   for (_j = 0, _len2 = points.length; _j < _len2; _j++) {
@@ -190,8 +194,8 @@ scatterPlot = function(id, points) {
     context.fillCircle(p.x, p.y, 2);
   }
   context.strokeStyle = elem.css('color');
-  context.drawLine(view.toViewX(min.x), h - 2, view.toViewX(max.x), h - 2);
-  context.drawLine(2, view.toViewY(min.y), 2, view.toViewY(max.y));
+  context.drawLine(view.toViewX(min.x), h - 4, view.toViewX(max.x), h - 4);
+  context.drawLine(4, view.toViewY(min.y), 4, view.toViewY(max.y));
   ptMin = view.toView({
     x: extent.x.min,
     y: extent.y.min
@@ -205,11 +209,11 @@ scatterPlot = function(id, points) {
     y: view.toViewY(extent.y.min + extent.y.delta) - ptMin.y
   };
   for (x = _ref = ptMin.x, _ref2 = ptMax.x, _ref3 = delta.x; _ref <= _ref2 ? x <= _ref2 : x >= _ref2; x += _ref3) {
-    context.drawLine(x, h, x, h - 3);
+    context.drawLine(x, h, x, h - 4);
   }
   _results = [];
   for (y = _ref4 = ptMin.y, _ref5 = ptMax.y, _ref6 = delta.y; _ref4 <= _ref5 ? y <= _ref5 : y >= _ref5; y += _ref6) {
-    _results.push(context.drawLine(0, y, 3, y));
+    _results.push(context.drawLine(0, y, 4, y));
   }
   return _results;
 };

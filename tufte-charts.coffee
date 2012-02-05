@@ -81,6 +81,9 @@ extents = (min, max) ->
 	dx = Math.abs max - min
 	ddx = dx / 10
 	divisor = 1
+	while ddx > 10
+		ddx /= 10
+		divisor /= 10
 	while ddx < 1
 		ddx *= 10
 		divisor *= 10
@@ -119,15 +122,15 @@ scatterPlot = (id, points) ->
 	extent = nearestExtents min, max
 	h = elem.height() - 1
 	view = new viewport extent.x.min, extent.y.min, extent.x.max - extent.x.min, \
-		extent.y.max - extent.y.min, 2, 2, elem.width()-5, elem.height()-5
+		extent.y.max - extent.y.min, 4, 2, elem.width()-7, elem.height()-7
 	context = getContext id
 	context.fillStyle = elem.css('color')
 	for pt in points
 		p = view.toView pt
 		context.fillCircle p.x, p.y, 2
 	context.strokeStyle = elem.css('color')
-	context.drawLine view.toViewX(min.x), h - 2, view.toViewX(max.x), h - 2
-	context.drawLine 2, view.toViewY(min.y), 2, view.toViewY(max.y)
+	context.drawLine view.toViewX(min.x), h - 4, view.toViewX(max.x), h - 4
+	context.drawLine 4, view.toViewY(min.y), 4, view.toViewY(max.y)
 	ptMin = view.toView { x: extent.x.min, y: extent.y.min }
 	ptMax = view.toView { x: extent.x.max, y: extent.y.max }
 	delta = {
@@ -135,6 +138,6 @@ scatterPlot = (id, points) ->
 		y: view.toViewY(extent.y.min + extent.y.delta) - ptMin.y
 	}
 	for x in [ptMin.x..ptMax.x] by delta.x
-		context.drawLine x, h, x, h - 3
+		context.drawLine x, h, x, h - 4
 	for y in [ptMin.y..ptMax.y] by delta.y
-		context.drawLine 0, y, 3, y
+		context.drawLine 0, y, 4, y
