@@ -143,3 +143,26 @@ scatterPlot = (id, points) ->
 		context.drawLine x, h, x, h - 4
 	for y in [ptMin.y..ptMax.y] by delta.y
 		context.drawLine 0, y, 4, y
+
+dotDashPlot = (id, points) ->
+	n = points.length - 1
+	min = { x: points[0].x, y: points[0].y }
+	max = { x: min.x, y: min.y }
+	for pt in points
+		min.x = Math.min pt.x, min.x
+		min.y = Math.min pt.y, min.y
+		max.x = Math.max pt.x, max.x
+		max.y = Math.max pt.y, max.y
+	elem = $('#' + id)
+	extent = nearestExtents min, max
+	h = elem.height() - 1
+	view = new viewport extent.x.min, extent.y.min, extent.x.max - extent.x.min, \
+		extent.y.max - extent.y.min, 4, 2, elem.width()-7, elem.height()-7
+	context = getContext id
+	context.fillStyle = elem.css('color')
+	context.strokeStyle = elem.css('color')
+	for pt in points
+		p = view.toView pt
+		context.fillCircle p.x, p.y, 2
+		context.drawLine p.x, h - 4, p.x, h
+		context.drawLine 0, p.y, 4, p.y

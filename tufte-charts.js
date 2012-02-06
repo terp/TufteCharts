@@ -1,4 +1,4 @@
-var barChart, extents, getContext, nearestExtents, scatterPlot, sparkline, viewport;
+var barChart, dotDashPlot, extents, getContext, nearestExtents, scatterPlot, sparkline, viewport;
 
 getContext = function(id) {
   return document.getElementById(id).getContext('2d');
@@ -214,6 +214,42 @@ scatterPlot = function(id, points) {
   _results = [];
   for (y = _ref4 = ptMin.y, _ref5 = ptMax.y, _ref6 = delta.y; _ref4 <= _ref5 ? y <= _ref5 : y >= _ref5; y += _ref6) {
     _results.push(context.drawLine(0, y, 4, y));
+  }
+  return _results;
+};
+
+dotDashPlot = function(id, points) {
+  var context, elem, extent, h, max, min, n, p, pt, view, _i, _j, _len, _len2, _results;
+  n = points.length - 1;
+  min = {
+    x: points[0].x,
+    y: points[0].y
+  };
+  max = {
+    x: min.x,
+    y: min.y
+  };
+  for (_i = 0, _len = points.length; _i < _len; _i++) {
+    pt = points[_i];
+    min.x = Math.min(pt.x, min.x);
+    min.y = Math.min(pt.y, min.y);
+    max.x = Math.max(pt.x, max.x);
+    max.y = Math.max(pt.y, max.y);
+  }
+  elem = $('#' + id);
+  extent = nearestExtents(min, max);
+  h = elem.height() - 1;
+  view = new viewport(extent.x.min, extent.y.min, extent.x.max - extent.x.min, extent.y.max - extent.y.min, 4, 2, elem.width() - 7, elem.height() - 7);
+  context = getContext(id);
+  context.fillStyle = elem.css('color');
+  context.strokeStyle = elem.css('color');
+  _results = [];
+  for (_j = 0, _len2 = points.length; _j < _len2; _j++) {
+    pt = points[_j];
+    p = view.toView(pt);
+    context.fillCircle(p.x, p.y, 2);
+    context.drawLine(p.x, h - 4, p.x, h);
+    _results.push(context.drawLine(0, p.y, 4, p.y));
   }
   return _results;
 };

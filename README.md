@@ -10,6 +10,8 @@ To start, I've just got a few charts:
 
 * Scatter
 
+* Dot-Dash
+
 All the charts currently draw from the CSS `color` and `background-color` properties to infer how to render the data.
 
 The sparkline is best used in a small canvas, due to the nature of its intent.
@@ -20,4 +22,4 @@ The scatter plot includes a range-frame.
 
 TODO
 ----
-I'll be adding multiple series to the scatter plot soon, along with some additional means of annotating the data. I'm also planning to add some more chart styles, including the modified box plot and the dot-dash-plot.
+I'll be adding multiple series to the scatter plot soon, along with some additional means of annotating the data. I'm also planning to add some more chart styles, including the modified box plot.

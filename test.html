@@ -1,12 +1,18 @@
 <!doctype html>
 <html>
 <head>
+	<title>TufteCharts Demo Page</title>
+	<link rel="stylesheet" type="text/css" href="tufte.css" />
 	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 	<script type="text/javascript" src="tufte-charts.js"></script>
 	<script type="text/javascript" src="test.js"></script>
-	<link rel="stylesheet" type="text/css" href="tufte.css" />
 </head>
 <body>
+	<div>
+	<h1>TufteCharts Demo Page</h1>
+	<p>This page is designed to demonstrate usage of the <a href="http://github.com/terp/TufteCharts">TufteCharts</a> CoffeeScript code. Enjoy!</p>
+	</div>
+	<div><span class="title">Traffic by Direction</span></div>
 	<table>
 		<tr>
 			<td class="label">Northbound:</td>
@@ -33,5 +39,9 @@
 		<span class="title">Traffic by Time of Day</span>
 		<canvas class="red" id="scatter" width="400" height="150"></canvas>
 	</div>
+	<div>
+		<canvas class="blue" id="dotdash" width="400" height="150"></canvas>
+	</div>
+	<div class="subnote">This is actual data recorded of the car traffic in front of my house during Super Bowl weekend.</div>
 </body>
 </html>
