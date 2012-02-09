@@ -1,4 +1,4 @@
-var barChart, dotDashPlot, extents, getContext, nearestExtents, scatterPlot, sparkline, viewport;
+var barChart, barChartSeries, dotDashPlot, extents, getContext, multipleBarChart, nearestExtents, scatterPlot, sparkline, viewport;
 
 getContext = function(id) {
   return document.getElementById(id).getContext('2d');
@@ -64,7 +64,7 @@ sparkline = function(id, values, min, max) {
 };
 
 barChart = function(id, values) {
-  var br, context, elem, max, n, p0, p25, p50, p75, pn, tl, v, view, x, _i, _len, _ref, _results;
+  var br, context, elem, max, n, p0, p25, p50, p75, pn, tl, v, view, w, x, _i, _len;
   n = values.length - 1;
   max = values[0];
   for (_i = 0, _len = values.length; _i < _len; _i++) {
@@ -86,6 +86,17 @@ barChart = function(id, values) {
     y: 0
   });
   context.drawLine(p0.x, p0.y, pn.x, pn.y);
+  for (x = 0; 0 <= n ? x <= n : x >= n; 0 <= n ? x++ : x--) {
+    tl = view.toView({
+      x: 2 * x,
+      y: values[x]
+    });
+    br = view.toView({
+      x: 2 * x + 1,
+      y: 0
+    });
+    context.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+  }
   context.strokeStyle = elem.css('background-color');
   p25 = view.toView({
     x: 0,
@@ -99,22 +110,89 @@ barChart = function(id, values) {
     x: 0,
     y: 0.75 * max
   });
-  _results = [];
-  for (x = 0, _ref = n + 1; 0 <= _ref ? x < _ref : x > _ref; 0 <= _ref ? x++ : x--) {
-    tl = view.toView({
-      x: 2 * x,
-      y: values[x]
-    });
-    br = view.toView({
-      x: 2 * x + 1,
-      y: 0
-    });
-    context.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
-    context.drawLine(tl.x, p25.y, br.x, p25.y);
-    context.drawLine(tl.x, p50.y, br.x, p50.y);
-    _results.push(context.drawLine(tl.x, p75.y, br.x, p75.y));
+  w = elem.width();
+  context.drawLine(0, p25.y, w, p25.y);
+  context.drawLine(0, p50.y, w, p50.y);
+  return context.drawLine(0, p75.y, w, p75.y);
+};
+
+barChartSeries = function(values, color) {
+  var max, min, x, _i, _len;
+  this.values = values;
+  this.len = values.length;
+  max = values[0];
+  min = max;
+  for (_i = 0, _len = values.length; _i < _len; _i++) {
+    x = values[_i];
+    max = Math.max(x, max);
+    min = Math.min(x, min);
   }
-  return _results;
+  this.min = min;
+  this.max = max;
+  return this.color = color;
+};
+
+multipleBarChart = function(id, seriesArray) {
+  var br, context, elem, i, max, min, n, ns, p0, p25, p50, p75, pn, s, tl, values, view, w, x, y, _i, _len;
+  ns = seriesArray.length;
+  n = 0;
+  min = 0;
+  max = 0;
+  for (_i = 0, _len = seriesArray.length; _i < _len; _i++) {
+    s = seriesArray[_i];
+    n = Math.max(n, s.values.length - 1);
+    min = Math.min(min, s.min);
+    max = Math.max(max, s.max);
+  }
+  elem = $('#' + id);
+  view = new viewport(0, min, (ns + 1) * (n + 1) - 1, max - min, 0, 0, elem.width(), elem.height() - 1);
+  context = getContext(id);
+  context.fillStyle = elem.css('color');
+  context.strokeStyle = elem.css('color');
+  context.lineWidth = 1;
+  p0 = view.toView({
+    x: 0,
+    y: 0
+  });
+  pn = view.toView({
+    x: (ns + 1) * (n + 1) - 1,
+    y: 0
+  });
+  context.drawLine(p0.x, p0.y, pn.x, pn.y);
+  for (i = 0; 0 <= ns ? i < ns : i > ns; 0 <= ns ? i++ : i--) {
+    context.fillStyle = seriesArray[i].color;
+    values = seriesArray[i].values;
+    for (x = 0; 0 <= n ? x <= n : x >= n; 0 <= n ? x++ : x--) {
+      y = values[x];
+      if (y === void 0) continue;
+      tl = view.toView({
+        x: (ns + 1) * x + i,
+        y: y
+      });
+      br = view.toView({
+        x: (ns + 1) * x + i + 1,
+        y: 0
+      });
+      context.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+    }
+  }
+  context.strokeStyle = elem.css('background-color');
+  p25 = view.toView({
+    x: 0,
+    y: 0.25 * max
+  });
+  p50 = view.toView({
+    x: 0,
+    y: 0.50 * max
+  });
+  p75 = view.toView({
+    x: 0,
+    y: 0.75 * max
+  });
+  w = elem.width();
+  context.drawLine(0, p25.y, w, p25.y);
+  context.drawLine(0, p50.y, w, p50.y);
+  return context.drawLine(0, p75.y, w, p75.y);
 };
 
 extents = function(min, max) {

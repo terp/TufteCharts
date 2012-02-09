@@ -38,9 +38,15 @@ table {
 	font-style: italic;
 	display: block;
 }
+.black {
+	color: black;
+}
 .red {
 	color: #D74939;
 }
 .blue {
 	color: #267F8D;
+}
+.green {
+	color: #87B72D;
 }

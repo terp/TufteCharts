@@ -1,6 +1,6 @@
 TufteCharts
 ===========
-This library covers some basic charting using CoffeeScript to render on an HTML5 Canvas. See the `test.html` and `test.coffee` files for example usage. The ideas are borrowed from the chapter *Data-Ink Maximization* in Edward Tufte's *The Visual Display of Quantitative Information*.
+This library covers some basic charting using CoffeeScript to render on an HTML5 Canvas. See the `index.html` and `test.coffee` files for example usage. The ideas are borrowed from the chapter *Data-Ink Maximization* in Edward Tufte's *The Visual Display of Quantitative Information*.
 
 To start, I've just got a few charts:
 
