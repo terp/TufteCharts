@@ -1,4 +1,55 @@
 # This is free and unencumbered software released into the public domain.
+@tufte = window.tufte ? {}
+
+safeMax = (max, x) ->
+	if max == undefined
+		x
+	else if x != undefined
+		Math.max max, x
+	else
+		max
+
+safeMin = (min, x) ->
+	if min == undefined
+		x
+	else if x != undefined
+		Math.min min, x
+	else
+		min
+
+minMax = (values) ->
+	min = undefined
+	max = undefined
+	for x in values
+		min = safeMin min, x
+		max = safeMax max, x
+	{ min: min, max: max }
+
+stats = (values) ->
+	min = undefined
+	max = undefined
+	total = 0
+	count = 0
+	for x in values
+		min = safeMin min, x
+		max = safeMax max, x
+		total += x if x != undefined
+		count++
+	avg = total / count
+	diff = 0
+	for x in values
+		diff += (x - avg) * (x - avg)
+	{ min: min, max: max, total: total, count: count, avg: avg, stdev: Math.sqrt diff / count }
+
+minMaxPt = (points) ->
+	min = { x: undefined, y: undefined }
+	max = { x: min.x, y: min.y }
+	for pt in points
+		min.x = safeMin min.x, pt.x
+		min.y = safeMin min.y, pt.y
+		max.x = safeMax max.x, pt.x
+		max.y = safeMax max.y, pt.y
+	{ min: min, max: max }	
 
 getContext = (id) ->
 	return document.getElementById(id).getContext('2d')
@@ -18,6 +69,8 @@ viewport = (x, y, w, h, vx, vy, vw, vh) ->
 	this.xoff = (vw - this.xscale * w) / 2
 	this.yoff = (vh - this.yscale * h) / 2
 
+tufte.viewport = viewport
+
 viewport.prototype.toViewX = (x) ->
 	this.vx + (x - this.x) * this.xscale + this.xoff
 
@@ -30,7 +83,7 @@ viewport.prototype.toView = (pt) ->
 		y: this.toViewY pt.y
 	}
 
-sparkline = (id, values, min, max) ->
+tufte.sparkline = (id, values, min, max) ->
 	n = values.length - 1
 	elem = $('#' + id)
 	view = new viewport 0, min, n, max - min, 0, 2, elem.width(), elem.height()-3
@@ -53,7 +106,7 @@ sparkline = (id, values, min, max) ->
 	context.fillCircle view.toViewX(x), view.toViewY(values[x]), 2
 	return x
 
-barChart = (id, values) ->
+tufte.barChart = (id, values) ->
 	n = values.length - 1
 	max = values[0]
 	for v in values
@@ -80,27 +133,20 @@ barChart = (id, values) ->
 	context.drawLine 0, p50.y, w, p50.y
 	context.drawLine 0, p75.y, w, p75.y
 
-barChartSeries = (values, color) ->
+tufte.barChartSeries = (values, color) ->
 	this.values = values
-	this.len = values.length
-	max = values[0]
-	min = max
-	for x in values
-		max = Math.max x, max
-		min = Math.min x, min
-	this.min = min
-	this.max = max
 	this.color = color
 
-multipleBarChart = (id, seriesArray) ->
+tufte.multipleBarChart = (id, seriesArray) ->
 	ns = seriesArray.length
 	n = 0
 	min = 0
 	max = 0
 	for s in seriesArray
 		n = Math.max n, s.values.length - 1
-		min = Math.min min, s.min
-		max = Math.max max, s.max
+		x = minMax s.values
+		min = Math.min min, x.min
+		max = Math.max max, x.max
 	elem = $('#' + id)
 	view = new viewport 0, min, (ns + 1) * (n + 1) - 1, max - min, 0, 0, elem.width(), elem.height()-1
 	context = getContext id
@@ -160,17 +206,11 @@ CanvasRenderingContext2D.prototype.fillCircle = (x, y, r) ->
 	this.arc x, y, r, 0, 2 * Math.PI, true
 	this.fill()
 
-scatterPlot = (id, points) ->
+tufte.scatterPlot = (id, points) ->
 	n = points.length - 1
-	min = { x: points[0].x, y: points[0].y }
-	max = { x: min.x, y: min.y }
-	for pt in points
-		min.x = Math.min pt.x, min.x
-		min.y = Math.min pt.y, min.y
-		max.x = Math.max pt.x, max.x
-		max.y = Math.max pt.y, max.y
+	bounds = minMaxPt points
 	elem = $('#' + id)
-	extent = nearestExtents min, max
+	extent = nearestExtents bounds.min, bounds.max
 	h = elem.height() - 1
 	view = new viewport extent.x.min, extent.y.min, extent.x.max - extent.x.min, \
 		extent.y.max - extent.y.min, 4, 2, elem.width()-7, elem.height()-7
@@ -180,8 +220,8 @@ scatterPlot = (id, points) ->
 		p = view.toView pt
 		context.fillCircle p.x, p.y, 2
 	context.strokeStyle = elem.css('color')
-	context.drawLine view.toViewX(min.x), h - 4, view.toViewX(max.x), h - 4
-	context.drawLine 4, view.toViewY(min.y), 4, view.toViewY(max.y)
+	context.drawLine view.toViewX(bounds.min.x), h - 4, view.toViewX(bounds.max.x), h - 4
+	context.drawLine 4, view.toViewY(bounds.min.y), 4, view.toViewY(bounds.max.y)
 	ptMin = view.toView { x: extent.x.min, y: extent.y.min }
 	ptMax = view.toView { x: extent.x.max, y: extent.y.max }
 	delta = {
@@ -193,17 +233,11 @@ scatterPlot = (id, points) ->
 	for y in [ptMin.y..ptMax.y] by delta.y
 		context.drawLine 0, y, 4, y
 
-dotDashPlot = (id, points) ->
+tufte.dotDashPlot = (id, points) ->
 	n = points.length - 1
-	min = { x: points[0].x, y: points[0].y }
-	max = { x: min.x, y: min.y }
-	for pt in points
-		min.x = Math.min pt.x, min.x
-		min.y = Math.min pt.y, min.y
-		max.x = Math.max pt.x, max.x
-		max.y = Math.max pt.y, max.y
+	bounds = minMaxPt points
 	elem = $('#' + id)
-	extent = nearestExtents min, max
+	extent = nearestExtents bounds.min, bounds.max
 	h = elem.height() - 1
 	view = new viewport extent.x.min, extent.y.min, extent.x.max - extent.x.min, \
 		extent.y.max - extent.y.min, 4, 2, elem.width()-7, elem.height()-7
@@ -215,3 +249,29 @@ dotDashPlot = (id, points) ->
 		context.fillCircle p.x, p.y, 2
 		context.drawLine p.x, h - 4, p.x, h
 		context.drawLine 0, p.y, 4, p.y
+
+tufte.boxPlot = (id, data) ->
+	n = data.length - 1
+	min = undefined
+	max = undefined
+	series = []
+	for arr in data
+		info = stats arr
+		info.data = arr
+		series[series.length] = info
+		min = safeMin min, info.min
+		max = safeMax max, info.max
+	elem = $('#' + id)
+	extent = extents min, max
+	view = new viewport 0, extent.min, n+1, extent.max - extent.min, \
+		4, 2, elem.width() - 7, elem.height() - 7
+	context = getContext id
+	context.fillStyle = elem.css('color')
+	context.strokeStyle = elem.css('color')
+	for i in [0...series.length]
+		info = series[i]
+		p = view.toView { x: i + 0.5, y: info.avg }
+		context.fillCircle p.x, p.y, 2
+		context.drawLine p.x, view.toViewY(info.max), p.x, view.toViewY(info.avg + info.stdev)
+		context.drawLine p.x, view.toViewY(info.avg - info.stdev), p.x, view.toViewY(info.min)
+		context.drawLine 0, p.y, 3, p.y

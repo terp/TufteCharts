@@ -1,3 +1,5 @@
+@tufte = window.tufte
+
 trafficScatter = ->
 	result = []
 	for i in [0...times.length]
@@ -45,25 +47,37 @@ byDay = ->
 				result[i][j] = 0
 		result[i][hour] = north[x] + south[x]
 	for i in [0...result.length]
-		result[i] = new barChartSeries result[i], colors[i]
+		result[i] = new tufte.barChartSeries result[i], colors[i]
+	result
+
+boxData = ->
+	result = []
+	for i in [0...north.length]
+		hour = times[i]
+		total = north[i] + south[i]
+		if result[hour] == undefined
+			result[hour] = []
+		data = result[hour]
+		data[data.length] = total
 	result
 
 render = ->
-	i = sparkline 'north', north, 0, 60
+	i = tufte.sparkline 'north', north, 0, 60
 	$('#north-max').text "#{formatTime times[i]}, #{north[i]} cars"
-	i = sparkline 'south', south, 0, 60
+	i = tufte.sparkline 'south', south, 0, 60
 	$('#south-max').text "#{formatTime times[i]}, #{south[i]} cars"
 	all = total()
-	i = sparkline 'all', all, 0, 80
+	i = tufte.sparkline 'all', all, 0, 80
 	$('#all-max').text "#{formatTime times[i]}, #{all[i]} cars"
-	barChart 'bar_chart', all
+	tufte.barChart 'bar_chart', all
 	total = south.reduce (x, s) -> x + s
 	$('#south-note').text "#{total} cars in #{times.length} hours," + \
 		" average #{round total / times.length, 1} cars/hour" + \
 		" or about #{round times.length * 60 / total, 1} minutes between cars"
-	multipleBarChart 'by_day', byDay()
-	scatterPlot 'scatter', trafficScatter()
-	dotDashPlot 'dotdash', trafficScatter()
+	tufte.multipleBarChart 'by_day', byDay()
+	tufte.scatterPlot 'scatter', trafficScatter()
+	tufte.dotDashPlot 'dotdash', trafficScatter()
+	tufte.boxPlot 'box', boxData()
 
 $ ->
 	render()
